@@ -29,7 +29,7 @@ print ("""//======= Copyright (c) Valve Corporation, All rights reserved. ======
 #endif
 
 // OPENVR API export macro
-#if defined( _WIN32 )
+#if defined( _WIN32 ) && !defined( _X360 )
 	#if defined( OPENVR_API_EXPORTS )
 	#define S_API EXTERN_C __declspec( dllexport )
 	#elif defined( OPENVR_API_NODLL )
@@ -65,16 +65,6 @@ typedef uint64_t VRActionHandle_t;
 typedef uint64_t VRActionSetHandle_t;
 typedef uint64_t VRInputValueHandle_t;
 typedef uint64_t PathHandle_t;
-
-// 64-bit types that are part of public structures
-// that are replicated in shared memory.
-#if defined(__linux__) || defined(__APPLE__)
-typedef uint64_t vrshared_uint64_t __attribute__ ((aligned(8)));
-typedef double vrshared_double __attribute__ ((aligned(8)));
-#else
-typedef uint64_t vrshared_uint64_t;
-typedef double vrshared_double;
-#endif
 """)
 
 
@@ -167,8 +157,7 @@ for typedef in data['typedefs']:
 		if(thetype[0:6] != 'union ' and thetype[0:7] != 'struct '):
 			thetypedef = getclasswithoutnamespace(typedef['typedef']) # remove the vr:: bit from thetypedef
 			thetype = getclasswithoutnamespace(thetype)
-			if (thetypedef != 'vrshared_uint64_t' and thetypedef != 'vrshared_double'):
-				print('typedef '+thetype+' '+thetypedef+';')
+			print('typedef '+thetype+' '+thetypedef+';')
 
 ######
 # Output structs
